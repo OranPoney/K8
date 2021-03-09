@@ -1,0 +1,29 @@
+awsRegion: ${AWS_REGION}
+autoDiscovery:
+  clusterName: ${CLUSTER_NAME}
+cloudProvider: aws
+extraArgs:
+  balance-similar-node-groups:
+  ignore-daemonsets-utilization: "true"
+  skip-nodes-with-local-storage: "false"
+  skip-nodes-with-system-pods: "false"
+image:
+  tag: ${IMAGE_TAG}
+priorityClassName: system-cluster-critical
+rbac:
+  create: true
+  serviceAccount:
+    annotations:
+      eks.amazonaws.com/role-arn: ${ROLE_ARN}
+securityContext:
+  fsGroup: 65534
+sslCertPath: /etc/kubernetes/pki/ca.crt
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: node.kubernetes.io/role
+              operator: In
+              values:
+                - system
