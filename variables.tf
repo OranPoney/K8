@@ -14,7 +14,7 @@ variable "aws_region" {
 }
 
 variable "cluster_autoscaler_enabled" {
-  description = "Creates IAM resources for cluster-autoscaler"
+  description = "Creates IAM resources and install cluster-autoscaler"
   default     = true
 }
 
@@ -162,6 +162,16 @@ variable "kubernetes_root_encrypted" {
 variable "kubernetes_root_volume_size" {
   description = "Size of root volume"
   default     = 100
+}
+
+variable "sock_shop_enabled" {
+  description = "Install sock-shop"
+  default     = true
+}
+
+variable "sock_shop_values" {
+  description = "Values for sock-shop chart"
+  default     = ""
 }
 
 variable "tags" {

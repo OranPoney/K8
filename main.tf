@@ -3,7 +3,7 @@ resource "aws_kms_key" "eks" {
 }
 
 module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
+  source = "terraform-aws-modules/eks/aws"
 
   cluster_name                          = local.kubernetes_cluster_name
   cluster_version                       = var.kubernetes_cluster_version
@@ -24,8 +24,8 @@ module "eks" {
   ]
 
   node_groups_defaults = {
-    ami_type  = "AL2_x86_64"
-    disk_size = var.kubernetes_root_volume_size
+    ami_type      = "AL2_x86_64"
+    disk_size     = var.kubernetes_root_volume_size
     capacity_type = "ON_DEMAND"
 
     tags = [
@@ -44,22 +44,22 @@ module "eks" {
 
   node_groups = {
     application = {
-      name="application"
+      name             = "application"
       desired_capacity = var.kubernetes_application_nodes_instance_desired_capacity
-      min_capacity = var.kubernetes_application_nodes_instance_min_capacity
-      max_capacity = var.kubernetes_application_nodes_instance_max_capacity
+      min_capacity     = var.kubernetes_application_nodes_instance_min_capacity
+      max_capacity     = var.kubernetes_application_nodes_instance_max_capacity
 
-      instance_types = [        var.kubernetes_system_nodes_instance_type]
-      capacity_type = "SPOT"
+      instance_types  = [var.kubernetes_system_nodes_instance_type]
+      capacity_type   = "SPOT"
       additional_tags = var.tags
     }
-    system= {
-      name="system"
+    system = {
+      name             = "system"
       desired_capacity = var.kubernetes_system_nodes_instance_desired_capacity
-      min_capacity = var.kubernetes_system_nodes_instance_min_capacity
-      max_capacity = var.kubernetes_system_nodes_instance_max_capacity
+      min_capacity     = var.kubernetes_system_nodes_instance_min_capacity
+      max_capacity     = var.kubernetes_system_nodes_instance_max_capacity
 
-      instance_types = [        var.kubernetes_system_nodes_instance_type]
+      instance_types  = [var.kubernetes_system_nodes_instance_type]
       additional_tags = var.tags
     }
   }
@@ -77,6 +77,13 @@ module "iam_cluster_autoscaler" {
   provider_url                  = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
   role_policy_arns              = [aws_iam_policy.cluster_autoscaler.0.arn]
   oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:cluster-autoscaler"]
+}
+
+resource "aws_iam_role_policy_attachment" "cluster_autoscaler" {
+  count = var.cluster_autoscaler_enabled ? 1 : 0
+
+  policy_arn = aws_iam_policy.cluster_autoscaler.0.arn
+  role = module.iam_cluster_autoscaler.0.this_iam_role_name
 }
 
 resource "aws_iam_policy" "cluster_autoscaler" {
@@ -191,27 +198,23 @@ data "aws_iam_policy_document" "velero" {
   }
 }
 
-data "template_file" "cluster_autoscaler_values" {
-  count    = var.cluster_autoscaler_enabled ? 0 : 1
-  template = file("${path.module}/values-cluster-autoscaler.yaml.tmpl")
-  vars = {
-    AWS_REGION   = data.aws_region.current.name,
-    CLUSTER_NAME = module.eks.cluster_id,
-    IMAGE_TAG    = "v1.18.3",
-    ROLE_ARN     = module.iam_cluster_autoscaler.0.this_iam_role_arn
-  }
-}
-
 resource "helm_release" "cluster_autoscaler" {
-  count = var.cluster_autoscaler_enabled ? 0 : 1
+  count = var.cluster_autoscaler_enabled ? 1 : 0
 
   name       = "cluster-autoscaler"
   repository = "https://kubernetes.github.io/autoscaler"
   chart      = "cluster-autoscaler"
-  version    = "9.1.0"
+  version    = "9.9.0"
   namespace  = "kube-system"
   values = [
-    data.template_file.cluster_autoscaler_values.0.rendered,
+    templatefile("${path.module}/values-cluster-autoscaler.yaml.tmpl",
+      {
+        AWS_REGION   = data.aws_region.current.name,
+        CLUSTER_NAME = module.eks.cluster_id,
+        IMAGE_TAG    = "v1.19.1",
+        ROLE_ARN     = module.iam_cluster_autoscaler.0.this_iam_role_arn
+      }
+    ),
     var.cluster_autoscaler_values,
   ]
 }
@@ -222,7 +225,7 @@ resource "helm_release" "ingress_nginx" {
   name             = "ingress-nginx"
   repository       = "https://kubernetes.github.io/ingress-nginx"
   chart            = "ingress-nginx"
-  version          = "3.12.0"
+  version          = "3.25.0"
   namespace        = var.ingress_nginx_namespace
   create_namespace = true
 
@@ -230,4 +233,14 @@ resource "helm_release" "ingress_nginx" {
     file("${path.module}/values-ingress-nginx.yaml"),
     var.ingress_nginx_values,
   ]
+}
+
+resource "helm_release" "sock_shop" {
+  count = var.sock_shop_enabled ? 1 : 0
+
+  name             = "sock-shop"
+  chart            = "${path.module}/charts/sock-shop"
+  namespace = "sock-shop"
+  create_namespace = true
+  values = [var.sock_shop_values]
 }

@@ -2,21 +2,11 @@ controller:
   publishService:
     enabled: true
   service:
-    annotations:
-      service.beta.kubernetes.io/aws-load-balancer-internal: true
     omitClusterIP: true
   defaultBackend:
     service:
       omitClusterIP: true
   affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: node.kubernetes.io/role
-                operator: In
-                values:
-                  - system
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
       - weight: 100

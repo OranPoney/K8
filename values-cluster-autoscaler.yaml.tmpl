@@ -1,9 +1,10 @@
+fullnameOverride: cluster-autoscaler
 awsRegion: ${AWS_REGION}
 autoDiscovery:
   clusterName: ${CLUSTER_NAME}
 cloudProvider: aws
 extraArgs:
-  balance-similar-node-groups:
+  balance-similar-node-groups: "true"
   ignore-daemonsets-utilization: "true"
   skip-nodes-with-local-storage: "false"
   skip-nodes-with-system-pods: "false"
@@ -18,12 +19,4 @@ rbac:
 securityContext:
   fsGroup: 65534
 sslCertPath: /etc/kubernetes/pki/ca.crt
-affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: node.kubernetes.io/role
-              operator: In
-              values:
-                - system
+
