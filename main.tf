@@ -1,3 +1,8 @@
+module "keypair" {
+  source  = "git@github.com:bluesentry/tf-module.keypair.git?ref=v2.0.3"
+  name    = "evolven"
+}
+
 resource "aws_kms_key" "eks" {
   description = "${local.kubernetes_cluster_name} EKS Cluster Secret Encryption Key"
 }
@@ -27,6 +32,8 @@ module "eks" {
     ami_type      = "AL2_x86_64"
     disk_size     = var.kubernetes_root_volume_size
     capacity_type = "ON_DEMAND"
+    subnets = module.vpc.0.public_subnets
+    key_name = module.keypair.key_name
 
     tags = [
       {
@@ -64,7 +71,47 @@ module "eks" {
     }
   }
 
+  map_users = [
+    {
+      userarn  = "arn:aws:iam::083928272245:user/OranP"
+      username = "oranp"
+      groups   = ["system:masters"]
+    },
+  ]
+
   tags = var.tags
+}
+
+data "kubernetes_secret" "evolven_collection" {
+  metadata {
+    name = kubernetes_service_account.evolven_collection.default_secret_name
+    namespace = "kube-system"
+  }
+}
+
+resource "kubernetes_service_account" "evolven_collection" {
+  metadata {
+    name = "evolven-collection"
+    namespace = "kube-system"
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "evolven_collection" {
+  metadata {
+    name = "evolven-collection"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "view"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name = "evolven-collection"
+    namespace = "kube-system"
+//    name      = kubernetes_service_account.evolven_collection.metadata["name"]
+//    namespace = kubernetes_service_account.evolven_collection.metadata["namespace"]
+  }
 }
 
 module "iam_cluster_autoscaler" {
@@ -196,6 +243,20 @@ data "aws_iam_policy_document" "velero" {
 
     resources = [module.s3_backup_bucket.0.this_s3_bucket_arn]
   }
+}
+
+resource "helm_release" "argocd" {
+  count = var.argocd_enabled ? 1 : 0
+
+  name = "argo-cd"
+  repository = "https://argoproj.github.io/argo-helm"
+  chart = "argo-cd"
+  version = "2.17.4"
+
+  values = [
+    file("${path.module}/values-argo-cd.yaml"),
+    var.argocd_values,
+  ]
 }
 
 resource "helm_release" "cluster_autoscaler" {

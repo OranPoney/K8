@@ -8,7 +8,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      name: paymnent
+      name: payment
   replicas: 1
   template:
     metadata:

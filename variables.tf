@@ -13,6 +13,16 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
+variable "argocd_enabled" {
+  description = "Creates IAM resources and install cluster-autoscaler"
+  default     = true
+}
+
+variable "argocd_values" {
+  description = "Values for cluster-autoscaler chart"
+  default     = ""
+}
+
 variable "cluster_autoscaler_enabled" {
   description = "Creates IAM resources and install cluster-autoscaler"
   default     = true
