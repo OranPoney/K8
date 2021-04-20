@@ -96,9 +96,27 @@ resource "kubernetes_service_account" "evolven_collection" {
   }
 }
 
-resource "kubernetes_cluster_role_binding" "evolven_collection" {
+resource "kubernetes_cluster_role" "evolven_collection" {
   metadata {
     name = "evolven-collection"
+  }
+  rule {
+    api_groups = [""]
+    verbs = [
+      "get",
+      "list",
+      "watch",
+    ]
+    resources = [
+      "nodes",
+      "secrets",
+    ]
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "evolven_collection_view" {
+  metadata {
+    name = "evolven-collection-view"
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
@@ -109,8 +127,26 @@ resource "kubernetes_cluster_role_binding" "evolven_collection" {
     kind      = "ServiceAccount"
     name = "evolven-collection"
     namespace = "kube-system"
-//    name      = kubernetes_service_account.evolven_collection.metadata["name"]
-//    namespace = kubernetes_service_account.evolven_collection.metadata["namespace"]
+    //    name      = kubernetes_service_account.evolven_collection.metadata["name"]
+    //    namespace = kubernetes_service_account.evolven_collection.metadata["namespace"]
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "evolven_collection" {
+  metadata {
+    name = "evolven-collection"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = kubernetes_cluster_role.evolven_collection.metadata.0.name
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name = "evolven-collection"
+    namespace = "kube-system"
+    //    name      = kubernetes_service_account.evolven_collection.metadata["name"]
+    //    namespace = kubernetes_service_account.evolven_collection.metadata["namespace"]
   }
 }
 
