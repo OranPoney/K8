@@ -288,6 +288,8 @@ resource "helm_release" "argocd" {
   repository = "https://argoproj.github.io/argo-helm"
   chart = "argo-cd"
   version = "2.17.4"
+  namespace = "argocd"
+  create_namespace = true
 
   values = [
     file("${path.module}/values-argo-cd.yaml"),
