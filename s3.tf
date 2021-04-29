@@ -2,6 +2,7 @@ module "s3_backup_bucket" {
   count = var.kubernetes_backup_bucket_create ? 1 : 0
 
   source  = "terraform-aws-modules/s3-bucket/aws"
+version = "1.20.0"
 
   bucket = local.kubernetes_backup_bucket_name
   acl    = "private"
