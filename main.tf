@@ -344,3 +344,12 @@ resource "helm_release" "sock_shop" {
   create_namespace = true
   values = [var.sock_shop_values]
 }
+
+resource "helm_release" "metrics_server" {
+  name = "metrics-server"
+  repository = "https://charts.bitnami.com/bitnami"
+  chart = "metrics-server"
+  namespace = "kube-system"
+  version = "5.7.1"
+  values = [file("${path.module}/values-metrics-server.yaml")]
+}
