@@ -9,7 +9,7 @@ resource "aws_kms_key" "eks" {
 
 module "eks" {
   source = "terraform-aws-modules/eks/aws"
-version = "13.2.1"
+version = "latest"
 
   cluster_name                          = local.kubernetes_cluster_name
   cluster_version                       = var.kubernetes_cluster_version
@@ -74,8 +74,8 @@ version = "13.2.1"
 
   map_users = [
     {
-      userarn  = "arn:aws:iam::083928272245:user/OranP"
-      username = "oranp"
+      userarn  = "arn:aws:iam::222771205538:user/Oran"
+      username = "Oran"
       groups   = ["system:masters"]
     },
   ]
@@ -288,7 +288,7 @@ resource "helm_release" "argocd" {
   name = "argo-cd"
   repository = "https://argoproj.github.io/argo-helm"
   chart = "argo-cd"
-  version = "2.17.4"
+  version = "latest"
   namespace = "argocd"
   create_namespace = true
 
@@ -304,7 +304,7 @@ resource "helm_release" "cluster_autoscaler" {
   name       = "cluster-autoscaler"
   repository = "https://kubernetes.github.io/autoscaler"
   chart      = "cluster-autoscaler"
-  version    = "9.9.0"
+  version    = "latest"
   namespace  = "kube-system"
   values = [
     templatefile("${path.module}/values-cluster-autoscaler.yaml.tmpl",
@@ -325,7 +325,7 @@ resource "helm_release" "ingress_nginx" {
   name             = "ingress-nginx"
   repository       = "https://kubernetes.github.io/ingress-nginx"
   chart            = "ingress-nginx"
-  version          = "3.25.0"
+  version          = "latest"
   namespace        = var.ingress_nginx_namespace
   create_namespace = true
 
@@ -350,6 +350,6 @@ resource "helm_release" "metrics_server" {
   repository = "https://charts.bitnami.com/bitnami"
   chart = "metrics-server"
   namespace = "kube-system"
-  version = "5.7.1"
+  version = "latest"
   values = [file("${path.module}/values-metrics-server.yaml")]
 }
