@@ -1,5 +1,5 @@
 module "keypair" {
-  source  = "git@github.com:bluesentry/tf-module.keypair.git?ref=v2.0.3"
+  source  = "git@github.com:bluesentry/tf-module.keypair.git?ref=v2.0.4"
   name    = "evolven"
 }
 
