@@ -5,7 +5,7 @@ variable "name" {
 
 variable "aws_allowed_account_ids" {
   description = "AWS account number(s) used to build resources in"
-  default = ["083928272245"]
+  default = ["222771205538"]
 }
 
 variable "aws_region" {
