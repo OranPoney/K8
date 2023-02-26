@@ -10,6 +10,7 @@ version = "19.10.0"
   cluster_name                          = local.kubernetes_cluster_name
   cluster_version                       = var.kubernetes_cluster_version
   subnets                               = local.kubernetes_subnet_ids
+  map_public_ip_on_launch               = true
   vpc_id                                = local.kubernetes_vpc_id
   enable_irsa                           = var.kubernetes_enable_irsa
   cluster_endpoint_private_access       = var.kubernetes_cluster_endpoint_private_access
