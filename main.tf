@@ -1,7 +1,3 @@
-module "keypair" {
-  source  = "git@github.com:bluesentry/tf-module.keypair.git?ref=v2.0.4"
-  name    = "evolven"
-}
 
 resource "aws_kms_key" "eks" {
   description = "${local.kubernetes_cluster_name} EKS Cluster Secret Encryption Key"
@@ -9,7 +5,7 @@ resource "aws_kms_key" "eks" {
 
 module "eks" {
   source = "terraform-aws-modules/eks/aws"
-version = "19.10.0"
+version = "latest"
 
   cluster_name                          = local.kubernetes_cluster_name
   cluster_version                       = var.kubernetes_cluster_version
@@ -34,7 +30,7 @@ version = "19.10.0"
     disk_size     = var.kubernetes_root_volume_size
     capacity_type = "ON_DEMAND"
     subnets = module.vpc.0.public_subnets
-    key_name = module.keypair.key_name
+    key_name = "deploy-docs-k8s"
 
     tags = [
       {
