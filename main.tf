@@ -5,8 +5,7 @@ resource "aws_kms_key" "eks" {
 
 module "eks" {
   source = "terraform-aws-modules/eks/aws"
-version = "19.10.0"
-
+  version = "19.10.0"
   cluster_name                          = local.kubernetes_cluster_name
   cluster_version                       = var.kubernetes_cluster_version
   subnets                               = local.kubernetes_subnet_ids
