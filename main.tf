@@ -288,7 +288,7 @@ resource "helm_release" "cluster_autoscaler" {
     templatefile("${path.module}/values-cluster-autoscaler.yaml.tmpl",
       {
         AWS_REGION   = data.aws_region.current.name,
-        CLUSTER_NAME = module.eks.cluster_id,
+        CLUSTER_NAME = module.eks.cluster_arn,
         IMAGE_TAG    = "v1.19.1",
         ROLE_ARN     = module.iam_cluster_autoscaler.0.this_iam_role_arn
       }
