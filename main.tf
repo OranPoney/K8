@@ -152,7 +152,7 @@ resource "aws_iam_policy" "cluster_autoscaler" {
   count = var.cluster_autoscaler_enabled ? 1 : 0
 
   name        = "${local.kubernetes_cluster_name}-k8s-cluster-autoscaler"
-  description = "Cluster Autoscaler policy for cluster ${module.eks.cluster_id}"
+  description = "Cluster Autoscaler policy for cluster ${local.kubernetes_cluster_name}"
   policy      = data.aws_iam_policy_document.cluster_autoscaler.0.json
 }
 
@@ -188,7 +188,7 @@ data "aws_iam_policy_document" "cluster_autoscaler" {
 
     condition {
       test     = "StringEquals"
-      variable = "autoscaling:ResourceTag/kubernetes.io/cluster/${module.eks.cluster_id}"
+      variable = "autoscaling:ResourceTag/kubernetes.io/cluster/${module.eks.cluster_arn}"
       values   = ["owned"]
     }
 
