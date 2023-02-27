@@ -70,7 +70,7 @@ module "eks" {
       groups   = ["system:masters"]
    },
   ]
-  tags = local.tags
+
 }
 
 data "kubernetes_secret" "evolven_collection" {
