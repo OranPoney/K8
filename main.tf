@@ -282,7 +282,7 @@ resource "helm_release" "cluster_autoscaler" {
   name       = "cluster-autoscaler"
   repository = "https://kubernetes.github.io/autoscaler"
   chart      = "cluster-autoscaler"
-  version    = "latest"
+  version    = "9.9.0"
   namespace  = "kube-system"
   values = [
     templatefile("${path.module}/values-cluster-autoscaler.yaml.tmpl",
@@ -303,7 +303,7 @@ resource "helm_release" "ingress_nginx" {
   name             = "ingress-nginx"
   repository       = "https://kubernetes.github.io/ingress-nginx"
   chart            = "ingress-nginx"
-  version          = "latest"
+  version          = "3.25.0"
   namespace        = var.ingress_nginx_namespace
   create_namespace = true
 
@@ -328,6 +328,6 @@ resource "helm_release" "metrics_server" {
   repository = "https://charts.bitnami.com/bitnami"
   chart = "metrics-server"
   namespace = "kube-system"
-  version = "latest"
+  version = "5.7.1"
   values = [file("${path.module}/values-metrics-server.yaml")]
 }
