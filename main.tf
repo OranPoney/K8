@@ -60,40 +60,6 @@ module "eks" {
   ]
 }
 
-data "kubernetes_secret" "evolven_collection" {
-  metadata {
-    name = kubernetes_service_account.evolven_collection.default_secret_name
-    namespace = "kube-system"
-  }
-}
-
-resource "kubernetes_service_account" "evolven_collection" {
-  metadata {
-    name = "evolven-collection"
-    namespace = "kube-system"
-  }
-}
-
-resource "kubernetes_cluster_role" "evolven_collection" {
-  metadata {
-    name = "evolven-collection"
-  }
-  rule {
-    api_groups = [""]
-    verbs = [
-      "get",
-      "list",
-      "watch",
-    ]
-    resources = [
-      "nodes",
-      "secrets",
-    ]
-  }
-}
-
-
-
 module "iam_cluster_autoscaler" {
   count  = var.cluster_autoscaler_enabled ? 1 : 0
   source = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
