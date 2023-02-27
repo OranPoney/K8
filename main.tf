@@ -18,7 +18,7 @@ module "eks" {
   cluster_encryption_config = {
       provider_key_arn = aws_kms_key.eks.arn
       resources        = ["secrets"]
-    }
+  }
   
 
   eks_managed_node_group_defaults = {
@@ -51,32 +51,6 @@ module "eks" {
       
     }
   }
-  
-  manage_aws_auth_configmap = true
-
-  aws_auth_node_iam_role_arns_non_windows = [
-    module.eks_managed_node_group.iam_role_arn,
-    module.self_managed_node_group.iam_role_arn,
-  ]
-  
-    aws_auth_roles = [
-    {
-      rolearn  = eks_managed_node_groups.iam_role_arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups = [
-        "system:bootstrappers",
-        "system:nodes",
-      ]
-    },
-    {
-      rolearn  = eks_managed_node_groups.iam_role_arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups = [
-        "system:bootstrappers",
-        "system:nodes",
-      ]
-    }
-    ]
   aws_auth_users = [
    {
       userarn  = "arn:aws:iam::222771205538:user/Oran"
@@ -84,7 +58,6 @@ module "eks" {
       groups   = ["system:masters"]
    },
   ]
-
 }
 
 data "kubernetes_secret" "evolven_collection" {
@@ -119,41 +92,7 @@ resource "kubernetes_cluster_role" "evolven_collection" {
   }
 }
 
-resource "kubernetes_cluster_role_binding" "evolven_collection_view" {
-  metadata {
-    name = "evolven-collection-view"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "view"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name = "evolven-collection"
-    namespace = "kube-system"
-    //    name      = kubernetes_service_account.evolven_collection.metadata["name"]
-    //    namespace = kubernetes_service_account.evolven_collection.metadata["namespace"]
-  }
-}
 
-resource "kubernetes_cluster_role_binding" "evolven_collection" {
-  metadata {
-    name = "evolven-collection"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = kubernetes_cluster_role.evolven_collection.metadata.0.name
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name = "evolven-collection"
-    namespace = "kube-system"
-    //    name      = kubernetes_service_account.evolven_collection.metadata["name"]
-    //    namespace = kubernetes_service_account.evolven_collection.metadata["namespace"]
-  }
-}
 
 module "iam_cluster_autoscaler" {
   count  = var.cluster_autoscaler_enabled ? 1 : 0
