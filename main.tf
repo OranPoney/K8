@@ -216,7 +216,7 @@ resource "aws_iam_policy" "velero" {
   count = var.velero_enabled ? 1 : 0
 
   name        = "${local.kubernetes_cluster_name}-k8s-velero"
-  description = "Velero policy for cluster ${module.eks.cluster_id}"
+  description = "Velero policy for cluster demo"
   policy      = data.aws_iam_policy_document.velero.0.json
 }
 
