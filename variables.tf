@@ -186,9 +186,7 @@ variable "sock_shop_values" {
 
 variable "tags" {
   description = "Tags applied to all resources"
-  default = {
-    demo = "ci-cd
-  }
+  default = { }
 }
 
 variable "velero_enabled" {
