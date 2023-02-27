@@ -64,14 +64,6 @@ module "eks" {
     }
   }
 
-  map_users = [
-    {
-      userarn  = "arn:aws:iam::222771205538:user/Oran"
-      username = "Oran"
-      groups   = ["system:masters"]
-    },
-  ]
-
   tags = var.tags
 }
 
