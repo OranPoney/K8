@@ -63,7 +63,13 @@ module "eks" {
       additional_tags = var.tags
     }
   }
-
+  aws_auth_users = [
+   {
+      userarn  = "arn:aws:iam::222771205538:user/Oran"
+      username = "Oran"
+      groups   = ["system:masters"]
+   },
+  ]
   tags = var.tags
 }
 
