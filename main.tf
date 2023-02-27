@@ -8,16 +8,12 @@ module "eks" {
   version = "19.10.0"
   cluster_name                          = local.kubernetes_cluster_name
   cluster_version                       = var.kubernetes_cluster_version
-  
-  map_public_ip_on_launch               = true
   vpc_id                                = local.kubernetes_vpc_id
+  subnet_ids                            = local.kubernetes_subnet_ids
   enable_irsa                           = var.kubernetes_enable_irsa
   cluster_endpoint_private_access       = var.kubernetes_cluster_endpoint_private_access
-  cluster_endpoint_private_access_cidrs = local.kubernetes_cluster_endpoint_private_access_cidrs
   cluster_endpoint_public_access        = var.kubernetes_cluster_endpoint_public_access
   cluster_endpoint_public_access_cidrs  = local.kubernetes_cluster_endpoint_public_access_cidrs
-
-  manage_aws_auth = var.kubernetes_manage_aws_auth
   cluster_encryption_config = [
     {
       provider_key_arn = aws_kms_key.eks.arn
@@ -25,7 +21,7 @@ module "eks" {
     }
   ]
 
-  node_groups_defaults = {
+  eks_managed_node_group_defaults = {
     ami_type      = "AL2_x86_64"
     disk_size     = var.kubernetes_root_volume_size
     capacity_type = "ON_DEMAND"
@@ -46,7 +42,7 @@ module "eks" {
     ]
   }
 
-  node_groups = {
+  eks_managed_node_groups = {
     application = {
       name             = "application"
       desired_capacity = var.kubernetes_application_nodes_instance_desired_capacity
