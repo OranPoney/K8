@@ -59,7 +59,7 @@ version = "13.2.1"
 
       instance_types  = [var.kubernetes_system_nodes_instance_type]
       capacity_type   = "SPOT"
-      additional_tags = var.tags
+      
     }
     system = {
       name             = "system"
@@ -68,7 +68,7 @@ version = "13.2.1"
       max_capacity     = var.kubernetes_system_nodes_instance_max_capacity
 
       instance_types  = [var.kubernetes_system_nodes_instance_type]
-      additional_tags = var.tags
+      
     }
   }
 
