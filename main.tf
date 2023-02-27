@@ -28,18 +28,6 @@ module "eks" {
     subnets = module.vpc.0.public_subnets
     key_name = "deploy-docs-k8s"
 
-    tags = [
-      {
-        key                 = "k8s.io/cluster-autoscaler/enabled"
-        propagate_at_launch = "false"
-        value               = "true"
-      },
-      {
-        key                 = "k8s.io/cluster-autoscaler/${local.kubernetes_cluster_name}"
-        propagate_at_launch = "false"
-        value               = "true"
-      }
-    ]
   }
 
   eks_managed_node_groups = {
