@@ -51,7 +51,7 @@ module "eks" {
 
       instance_types  = [var.kubernetes_system_nodes_instance_type]
       capacity_type   = "SPOT"
-      additional_tags = var.tags
+     
     }
     system = {
       name             = "system"
@@ -60,7 +60,7 @@ module "eks" {
       max_capacity     = var.kubernetes_system_nodes_instance_max_capacity
 
       instance_types  = [var.kubernetes_system_nodes_instance_type]
-      additional_tags = var.tags
+      
     }
   }
   aws_auth_users = [
