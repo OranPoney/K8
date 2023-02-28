@@ -70,7 +70,7 @@ variable "kubernetes_cluster_name" {
 
 variable "kubernetes_cluster_version" {
   description = "Version of Kubernetes"
-  default     = "1.24"
+  default     = "1.23"
 }
 
 variable "kubernetes_enable_irsa" {
