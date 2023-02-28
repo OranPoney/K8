@@ -50,7 +50,7 @@ module "eks" {
       instance_types  = [var.kubernetes_system_nodes_instance_type]
     }
   }
-  manage_aws_auth = true
+  
   aws_auth_users = [
    {
       userarn  = "arn:aws:iam::222771205538:user/Oran"
@@ -58,6 +58,50 @@ module "eks" {
       groups   = ["system:masters"]
    },
   ]
+}
+  
+data "aws_eks_cluster" "cluster" {
+  name = local.kubernetes_cluster_name
+}
+
+data "aws_iam_user" "user" {
+  name = "oran"
+}
+
+resource "kubernetes_namespace" "namespaces" {
+  # Specify the list of namespaces where you want to create the ConfigMaps
+  # You can add or remove namespaces from this list as needed
+  for_each = toset(["default", "kube-system"])
+
+  metadata {
+    name = each.key
+  }
+}
+
+resource "kubernetes_config_map" "aws_auth" {
+  for_each = kubernetes_namespace.namespaces
+
+  metadata {
+    name      = "aws-auth"
+    namespace = each.value
+  }
+
+  data {
+    mapUsers = jsonencode([{
+      "userarn"  : "arn:aws:iam::222771205538:user/Oran",
+      "username" : "oran",
+      "groups"   : ["system:masters"]
+    }])
+
+    # You can add other IAM roles or users to the ConfigMap using the same format as above
+    # ...
+
+    # You can also add IAM roles to the ConfigMap using the "mapRoles" field
+    # ...
+  }
+
+  # Use the kubernetes provider that is configured in your Terraform configuration
+  provider = kubernetes.default
 }
 
 module "iam_cluster_autoscaler" {
