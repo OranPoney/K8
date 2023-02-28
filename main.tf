@@ -10,11 +10,13 @@ module "eks" {
   cluster_version                       = var.kubernetes_cluster_version
   vpc_id                                = local.kubernetes_vpc_id
   subnet_ids                            = local.kubernetes_subnet_ids
+  manage_aws_auth = true
   enable_irsa                           = var.kubernetes_enable_irsa
   cluster_endpoint_private_access       = var.kubernetes_cluster_endpoint_private_access
   cluster_endpoint_public_access        = var.kubernetes_cluster_endpoint_public_access
   cluster_endpoint_public_access_cidrs  = local.kubernetes_cluster_endpoint_public_access_cidrs
   create_kms_key = false
+  
   cluster_encryption_config = {
       provider_key_arn = aws_kms_key.eks.arn
       resources        = ["secrets"]
@@ -46,9 +48,7 @@ module "eks" {
       desired_capacity = var.kubernetes_system_nodes_instance_desired_capacity
       min_capacity     = var.kubernetes_system_nodes_instance_min_capacity
       max_capacity     = var.kubernetes_system_nodes_instance_max_capacity
-
       instance_types  = [var.kubernetes_system_nodes_instance_type]
-      
     }
   }
   aws_auth_users = [
