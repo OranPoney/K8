@@ -10,7 +10,6 @@ module "eks" {
   cluster_version                       = var.kubernetes_cluster_version
   vpc_id                                = local.kubernetes_vpc_id
   subnet_ids                            = local.kubernetes_subnet_ids
-  manage_aws_auth = true
   enable_irsa                           = var.kubernetes_enable_irsa
   cluster_endpoint_private_access       = var.kubernetes_cluster_endpoint_private_access
   cluster_endpoint_public_access        = var.kubernetes_cluster_endpoint_public_access
@@ -51,6 +50,7 @@ module "eks" {
       instance_types  = [var.kubernetes_system_nodes_instance_type]
     }
   }
+  manage_aws_auth = true
   aws_auth_users = [
    {
       userarn  = "arn:aws:iam::222771205538:user/Oran"
