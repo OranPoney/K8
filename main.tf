@@ -59,10 +59,6 @@ module "eks" {
    },
   ]
 }
-  
-data "aws_eks_cluster" "cluster" {
-  name = local.kubernetes_cluster_name
-}
 
 data "aws_iam_user" "user" {
   name = "oran"
